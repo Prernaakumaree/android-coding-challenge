@@ -13,6 +13,9 @@ import org.koin.android.ext.android.inject
 import org.koin.core.KoinComponent
 
 class PostsActivity : AppCompatActivity(), PostsView, KoinComponent {
+    private var isLoading: Boolean = false
+    private var isLastPage: Boolean = false
+    private var currentPage: Int = 1
 
     private val presenter: PostsPresenter by inject()
     private lateinit var navigation: Navigation
@@ -24,11 +27,28 @@ class PostsActivity : AppCompatActivity(), PostsView, KoinComponent {
         setContentView(R.layout.activity_posts)
         navigation = Navigation(this)
 
-        listOfPosts.layoutManager = LinearLayoutManager(this)
+        val llm = LinearLayoutManager(this)
+        listOfPosts.layoutManager = llm
         val separator = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         listOfPosts.addItemDecoration(separator)
 
+        listOfPosts.addOnScrollListener(object : PaginationScrollListener(llm) {
+            override fun isLastPage(): Boolean {
+                return isLastPage
+            }
+
+            override fun isLoading(): Boolean {
+                return isLoading
+            }
+
+            override fun loadMoreItems() {
+                currentPage += 1
+                presenter.loadPosts(currentPage)
+            }
+        })
+
         presenter.bind(this)
+        presenter.loadPosts(currentPage)
     }
 
     override fun onDestroy() {

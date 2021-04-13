@@ -43,6 +43,14 @@ class BlogRepository(
         )
     }
 
+    override fun getPagedPosts(page: Int): Single<List<Post>> {
+        return fetchData(
+            local = { postDao.getPagedPost(page*20) },
+            remote = { blogApi.getPagedPosts(page) },
+            insert = { value -> postDao.insertAll(*value.toTypedArray()) }
+        )
+    }
+
     fun getPost(postId: Int): Maybe<Post> {
         return postDao.get(postId)
     }

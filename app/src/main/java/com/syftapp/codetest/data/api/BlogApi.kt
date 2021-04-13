@@ -14,4 +14,6 @@ class BlogApi(private val blogService: BlogService) : BlogDataProvider {
 
     override fun getPosts() = blogService.getPosts().map { it.apiToDomain(PostMapper) }
 
+    override fun getPagedPosts(page: Int) = blogService.getPagedPosts(page).map { it.apiToDomain(PostMapper) }
+
 }

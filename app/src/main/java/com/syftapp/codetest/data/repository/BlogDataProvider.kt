@@ -13,4 +13,6 @@ interface BlogDataProvider {
 
     fun getPosts(): Single<List<Post>>
 
+    fun getPagedPosts(page: Int): Single<List<Post>>
+
 }

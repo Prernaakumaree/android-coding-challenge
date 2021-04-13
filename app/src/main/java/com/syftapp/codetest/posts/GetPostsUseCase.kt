@@ -14,4 +14,14 @@ class GetPostsUseCase(private val repository: BlogRepository) : KoinComponent {
             .andThen(repository.getPosts())
     }
 
+    /**
+     * execute the pagination for blog posts
+     */
+    fun executePaged(page: Int): Single<List<Post>> {
+        // users must be available for the blog posts
+        return repository.getUsers()
+            .ignoreElement()
+            .andThen(repository.getPagedPosts(page))
+    }
+
 }

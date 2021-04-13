@@ -33,6 +33,16 @@ class StubBlogService : BlogService {
         ))
     }
 
+    override fun getPagedPosts(page: Int, limit: Int): Single<List<Post>> {
+        return Single.just(listOf(
+            Post(1, 1, "title 1", "body 1"),
+            Post(1, 2, "title 2", "body 2"),
+            Post(2, 3, "title 3", "body 3"),
+            Post(2, 4, "title 4", "body 4"),
+            Post(2, 5, "title 5", "body 5")
+        ))
+    }
+
     private fun getUserWithId(id: Int): User {
         val stubCompany = Company("company", "catchphrase", "bs")
         val stubLatLng = LatLong("0", "0")

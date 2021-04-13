@@ -18,6 +18,9 @@ interface PostDao {
     @Query("SELECT * FROM post")
     fun getAll(): Single<List<Post>>
 
+    @Query("SELECT * FROM post LIMIT :page")
+    fun getPagedPost(page: Int): Single<List<Post>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg posts: Post): Completable
 }

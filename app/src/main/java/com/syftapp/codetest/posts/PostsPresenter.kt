@@ -1,5 +1,6 @@
 package com.syftapp.codetest.posts
 
+import android.util.Log
 import com.syftapp.codetest.data.model.domain.Post
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -13,7 +14,11 @@ class PostsPresenter(private val getPostsUseCase: GetPostsUseCase) : KoinCompone
 
     fun bind(view: PostsView) {
         this.view = view
-        compositeDisposable.add(loadPosts())
+        //compositeDisposable.add(loadPosts())
+    }
+
+    fun loadPosts(page: Int) {
+        compositeDisposable.add(loadPagedPosts(page))
     }
 
     fun unbind() {
@@ -27,6 +32,16 @@ class PostsPresenter(private val getPostsUseCase: GetPostsUseCase) : KoinCompone
     }
 
     private fun loadPosts() = getPostsUseCase.execute()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnSubscribe { view.render(PostScreenState.Loading) }
+        .doAfterTerminate { view.render(PostScreenState.FinishedLoading) }
+        .subscribe(
+            { view.render(PostScreenState.DataAvailable(it)) },
+            { view.render(PostScreenState.Error(it)) }
+        )
+
+    private fun loadPagedPosts(page: Int) = getPostsUseCase.executePaged(page)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .doOnSubscribe { view.render(PostScreenState.Loading) }
